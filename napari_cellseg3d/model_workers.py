@@ -630,9 +630,13 @@ class InferenceWorker(GeneratorWorker):
 
         self.save_image(out, from_layer=True)
 
-        instance_labels, data_dict = self.get_instance_result(out,from_layer=True)
+        instance_labels, data_dict = self.get_instance_result(
+            out, from_layer=True
+        )
 
-        return self.create_result_dict(out, instance_labels, from_layer=True, data_dict=data_dict)
+        return self.create_result_dict(
+            out, instance_labels, from_layer=True, data_dict=data_dict
+        )
 
     def inference(self):
         """
@@ -722,10 +726,7 @@ class InferenceWorker(GeneratorWorker):
                     AsDiscrete(threshold=t), EnsureType()
                 )
 
-
-            self.log(
-                "\nLoading weights..."
-            )
+            self.log("\nLoading weights...")
 
             if self.weights_dict["custom"]:
                 weights = self.weights_dict["path"]
