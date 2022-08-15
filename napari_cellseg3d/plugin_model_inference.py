@@ -134,7 +134,6 @@ class Inferer(ModelFramework):
         )
 
         self.window_infer_box = ui.CheckBox("Use window inference")
-
         self.window_infer_box.clicked.connect(self.toggle_display_window_size)
 
         sizes_window = ["8", "16", "32", "64", "128", "256", "512"]
@@ -162,6 +161,7 @@ class Inferer(ModelFramework):
             parent=self,
             label="Overlap %",
         )
+
         self.keep_data_on_cpu_box = ui.CheckBox("Keep data on CPU")
 
         window_size_widgets = ui.combine_blocks(
@@ -268,7 +268,6 @@ class Inferer(ModelFramework):
         self.window_size_choice.setToolTip(
             "Size of the window to run inference with (in pixels)"
         )
-
         self.window_overlap_counter.set_all_tooltips(
             "Percentage of overlap between windows to use when using sliding window"
         )
