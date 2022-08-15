@@ -83,10 +83,8 @@ class Inferer(ModelFramework):
         ###########################
         # interface
 
-        (
-            self.view_results_container,
-            self.view_results_layout,
-        ) = ui.ContainerWidget(t=7, b=0, parent=self)
+
+        self.view_results_container = ui.ContainerWidget(t=7, b=0, parent=self)
 
         self.view_checkbox = ui.CheckBox(
             "View results in napari", self.toggle_display_number
@@ -129,9 +127,10 @@ class Inferer(ModelFramework):
             max=1, default=0.7, step=0.05
         )
 
-        self.thresholding_container, self.thresh_layout = ui.ContainerWidget(
+        self.thresholding_container  = ui.ContainerWidget(
             t=7, parent=self
         )
+        self.thresh_layout = self.thresholding_container.layout
 
         self.window_infer_box = ui.CheckBox("Use window inference")
         self.window_infer_box.clicked.connect(self.toggle_display_window_size)
@@ -350,7 +349,7 @@ class Inferer(ModelFramework):
 
         # ui.add_blank(self.view_results_container, view_results_layout)
         ui.add_widgets(
-            self.view_results_layout,
+            self.view_results_container.layout,
             [
                 self.view_checkbox,
                 self.lbl_display_number,
@@ -360,7 +359,7 @@ class Inferer(ModelFramework):
             alignment=None,
         )
 
-        self.view_results_container.setLayout(self.view_results_layout)
+        self.view_results_container.setLayout(self.view_results_container.layout)
 
         self.anisotropy_wdgt.build()
 
@@ -389,7 +388,7 @@ class Inferer(ModelFramework):
         ######
         ############
         ##################
-        tab, tab_layout = ui.ContainerWidget(
+        tab = ui.ContainerWidget(
             B=1, parent=self
         )  # tab that will contain all widgets
 
@@ -416,10 +415,10 @@ class Inferer(ModelFramework):
         self.image_filewidget.update_field_color("black")
 
         io_group.setLayout(io_layout)
-        tab_layout.addWidget(io_group)
+        tab.layout.addWidget(io_group)
         #################################
         #################################
-        ui.add_blank(tab, tab_layout)
+        ui.add_blank(tab, tab.layout)
         #################################
         #################################
         # model group
@@ -441,11 +440,11 @@ class Inferer(ModelFramework):
         self.lbl_model_choice.setVisible(False)  # TODO remove (?)
 
         model_group_w.setLayout(model_group_l)
-        tab_layout.addWidget(model_group_w)
+        tab.layout.addWidget(model_group_w)
 
         #################################
         #################################
-        ui.add_blank(tab, tab_layout)
+        ui.add_blank(tab, tab.layout)
         #################################
         #################################
         inference_param_group_w, inference_param_group_l = ui.make_group(
@@ -464,11 +463,11 @@ class Inferer(ModelFramework):
 
         inference_param_group_w.setLayout(inference_param_group_l)
 
-        tab_layout.addWidget(inference_param_group_w)
+        tab.layout.addWidget(inference_param_group_w)
 
         #################################
         #################################
-        ui.add_blank(tab, tab_layout)
+        ui.add_blank(tab, tab.layout)
         #################################
         #################################
         # post proc group
@@ -492,10 +491,10 @@ class Inferer(ModelFramework):
         self.instance_param_container.setVisible(False)
 
         post_proc_group.setLayout(post_proc_layout)
-        tab_layout.addWidget(post_proc_group, alignment=ui.LEFT_AL)
+        tab.layout.addWidget(post_proc_group, alignment=ui.LEFT_AL)
         ###################################
         ###################################
-        ui.add_blank(tab, tab_layout)
+        ui.add_blank(tab, tab.layout)
         ###################################
         ###################################
         display_opt_group, display_opt_layout = ui.make_group(
@@ -520,13 +519,13 @@ class Inferer(ModelFramework):
         # self.lbl_label.setText("model.pth directory :")
 
         display_opt_group.setLayout(display_opt_layout)
-        tab_layout.addWidget(display_opt_group)
+        tab.layout.addWidget(display_opt_group)
         ###################################
-        ui.add_blank(self, tab_layout)
+        ui.add_blank(self, tab.layout)
         ###################################
         ###################################
         ui.add_widgets(
-            tab_layout,
+            tab.layout,
             [
                 self.btn_start,
                 self.btn_start_layer,
@@ -539,7 +538,7 @@ class Inferer(ModelFramework):
         # end of tabs, combine into scrollable
         ui.ScrollArea.make_scrollable(
             parent=tab,
-            contained_layout=tab_layout,
+            contained_layout=tab.layout,
             min_wh=[200, 100],
         )
         self.addTab(tab, "Inference")
