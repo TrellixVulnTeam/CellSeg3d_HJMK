@@ -85,16 +85,16 @@ class Inferer(ModelFramework):
         (
             self.view_results_container,
             self.view_results_layout,
-        ) = ui.make_container(T=7, B=0, parent=self)
+        ) = ui.ContainerWidget(t=7, b=0, parent=self)
 
-        self.view_checkbox = ui.make_checkbox(
+        self.view_checkbox = ui.CheckBox(
             "View results in napari", self.toggle_display_number
         )
 
         self.display_number_choice = ui.IntIncrementCounter(min=1, default=5)
         self.lbl_display_number = ui.make_label("How many ? (max. 10)", self)
 
-        self.show_original_checkbox = ui.make_checkbox("Show originals")
+        self.show_original_checkbox = ui.CheckBox("Show originals")
 
         ######################
         ######################
@@ -118,7 +118,7 @@ class Inferer(ModelFramework):
 
         ######################
         ######################
-        self.thresholding_checkbox = ui.make_checkbox(
+        self.thresholding_checkbox = ui.CheckBox(
             "Perform thresholding", self.toggle_display_thresh
         )
 
@@ -126,11 +126,11 @@ class Inferer(ModelFramework):
             max=1, default=0.7, step=0.05
         )
 
-        self.thresholding_container, self.thresh_layout = ui.make_container(
-            T=7, parent=self
+        self.thresholding_container, self.thresh_layout = ui.ContainerWidget(
+            t=7, parent=self
         )
 
-        self.window_infer_box = ui.make_checkbox("Use window inference")
+        self.window_infer_box = ui.CheckBox("Use window inference")
         self.window_infer_box.clicked.connect(self.toggle_display_window_size)
 
         sizes_window = ["8", "16", "32", "64", "128", "256", "512"]
@@ -139,7 +139,7 @@ class Inferer(ModelFramework):
         )
         self.lbl_window_size_choice = self.window_size_choice.label
 
-        self.keep_data_on_cpu_box = ui.make_checkbox("Keep data on CPU")
+        self.keep_data_on_cpu_box = ui.CheckBox("Keep data on CPU")
 
         self.window_infer_params = ui.combine_blocks(
             self.window_size_choice,
@@ -150,7 +150,7 @@ class Inferer(ModelFramework):
         ##################
         ##################
         # instance segmentation widgets
-        self.instance_box = ui.make_checkbox(
+        self.instance_box = ui.CheckBox(
             "Run instance segmentation", func=self.toggle_display_instance
         )
 
@@ -181,14 +181,14 @@ class Inferer(ModelFramework):
             left_or_above=self.instance_small_object_thresh_lbl,
             horizontal=False,
         )
-        self.save_stats_to_csv_box = ui.make_checkbox(
+        self.save_stats_to_csv_box = ui.CheckBox(
             "Save stats to csv", parent=self
         )
 
         (
             self.instance_param_container,
             self.instance_layout,
-        ) = ui.make_container(T=7, B=0, parent=self)
+        ) = ui.ContainerWidget(T=7, B=0, parent=self)
 
         ##################
         ##################
@@ -352,7 +352,7 @@ class Inferer(ModelFramework):
         ######
         ############
         ##################
-        tab, tab_layout = ui.make_container(
+        tab, tab_layout = ui.ContainerWidget(
             B=1, parent=self
         )  # tab that will contain all widgets
 
