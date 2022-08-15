@@ -67,12 +67,6 @@ def add_label(widget, label, label_before=True, horizontal=True):
         return combine_blocks(label, widget, horizontal=horizontal)
 
 
-def add_label(widget, label, label_before=True, horizontal=True):
-    if label_before:
-        return combine_blocks(widget, label, horizontal=horizontal)
-    else:
-        return combine_blocks(label, widget, horizontal=horizontal)
-
 class Button(QPushButton):
     """Class for a button with a title and connected to a function when clicked. Inherits from QPushButton.
 
