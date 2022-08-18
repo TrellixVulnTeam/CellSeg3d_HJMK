@@ -533,7 +533,7 @@ class InferenceWorker(GeneratorWorker):
         time = utils.get_date_time()
 
         file_path = (
-            self.config.results_path
+            self.config.results_path_folder
             + "/"
             + f"Prediction_{i+1}"
             + original_filename
@@ -589,7 +589,7 @@ class InferenceWorker(GeneratorWorker):
         instance_labels = method(to_instance)
 
         instance_filepath = (
-            self.config.results_path
+            self.config.results_path_folder
             + "/"
             + f"Instance_seg_labels_{image_id}_"
             + original_filename
@@ -664,12 +664,13 @@ class InferenceWorker(GeneratorWorker):
 
         self.save_image(out, from_layer=True)
 
-        instance_labels, stats = self.get_instance_result(
-            out, from_layer=True
-        )
+        instance_labels, stats = self.get_instance_result(out, from_layer=True)
 
         return self.create_result_dict(  # TODO refactor
-            semantic_labels=out, instance_labels= instance_labels, from_layer=True, stats=stats
+            semantic_labels=out,
+            instance_labels=instance_labels,
+            from_layer=True,
+            stats=stats,
         )
 
     def inference(self):
@@ -837,7 +838,7 @@ class TrainingReport:
     epoch: int = 0
     loss_values: List = None
     validation_metric: List = None
-    weights = None
+    weights: np.array = None
 
 
 class TrainingWorker(GeneratorWorker):
@@ -942,7 +943,7 @@ class TrainingWorker(GeneratorWorker):
         self.log(f"Training for {self.config.max_epochs} epochs")
         self.log(f"Loss function is : {str(self.config.loss_function)}")
         self.log(
-            f"Validation is performed every {self.config.val_interval} epochs"
+            f"Validation is performed every {self.config.validation_interval} epochs"
         )
         self.log(f"Batch size is {self.config.batch_size}")
         self.log(f"Learning rate is {self.config.learning_rate}")
@@ -954,7 +955,7 @@ class TrainingWorker(GeneratorWorker):
         else:
             self.log("Using whole images as dataset")
 
-        if self.config.do_augment:
+        if self.config.do_augmentation:
             self.log("Data augmentation is enabled")
 
         if self.config.weights_info.path is not None:
@@ -1049,8 +1050,8 @@ class TrainingWorker(GeneratorWorker):
                 print(f"Size of image : {size}")
                 model = model_class.get_net(
                     input_image_size=utils.get_padding_dim(size),
-                    out_channels=1,
-                    dropout_prob=0.3,
+                    # out_channels=1,
+                    # dropout_prob=0.3,
                 )
             elif model_name == "SwinUNetR":
                 if do_sampling:
@@ -1076,7 +1077,7 @@ class TrainingWorker(GeneratorWorker):
                         * self.config.validation_percent
                     )
                 ],
-                self.data_dicts[
+                self.config.train_data_dict[
                     int(
                         len(self.config.train_data_dict)
                         * self.config.validation_percent
@@ -1208,7 +1209,7 @@ class TrainingWorker(GeneratorWorker):
             # time = utils.get_date_time()
             print("Weights")
 
-            if weights_config.path is not None:
+            if weights_config.custom:
                 if weights_config.use_pretrained:
                     weights_file = model_class.get_weights_file()
                     self.downloader.download_weights(model_name, weights_file)
@@ -1270,7 +1271,7 @@ class TrainingWorker(GeneratorWorker):
                     )
                     optimizer.zero_grad()
                     outputs = model_class.get_output(model, inputs)
-                    # print(f"OUT : {outputs.shape}")
+                    # self.log(f"Output dimensions : {outputs.shape}")
                     loss = self.config.loss_function(outputs, labels)
                     loss.backward()
                     optimizer.step()
@@ -1279,7 +1280,9 @@ class TrainingWorker(GeneratorWorker):
                         f"* {step}/{len(train_ds) // train_loader.batch_size}, "
                         f"Train loss: {loss.detach().item():.4f}"
                     )
-                    yield {"plot": False, "weights": model.state_dict()}
+                    yield TrainingReport(
+                        show_plot=False, weights=model.state_dict()
+                    )
 
                 epoch_loss /= step
                 epoch_loss_values.append(epoch_loss)
@@ -1326,13 +1329,14 @@ class TrainingWorker(GeneratorWorker):
 
                         val_metric_values.append(metric)
 
-                        train_report = {
-                            "plot": True,
-                            "epoch": epoch,
-                            "losses": epoch_loss_values,
-                            "val_metrics": val_metric_values,
-                            "weights": model.state_dict(),
-                        }
+                        train_report = TrainingReport(
+                            show_plot=True,
+                            epoch=epoch,
+                            loss_values=epoch_loss_values,
+                            validation_metric=val_metric_values,
+                            weights=model.state_dict(),
+                        )
+
                         yield train_report
 
                         weights_filename = (
@@ -1347,7 +1351,7 @@ class TrainingWorker(GeneratorWorker):
                             torch.save(
                                 model.state_dict(),
                                 os.path.join(
-                                    self.config.results_path, weights_filename
+                                    self.config.results_path_folder, weights_filename
                                 ),
                             )
                             self.log("Saving complete")
