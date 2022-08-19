@@ -332,7 +332,7 @@ class InferenceWorker(GeneratorWorker):
 
         # print("FILEPATHS PRINT")
         # print(self.images_filepaths)
-        if self.config.sliding_window_config.enabled:
+        if self.config.sliding_window_config.is_enabled():
             load_transforms = Compose(
                 [
                     LoadImaged(keys=["image"]),
@@ -387,7 +387,7 @@ class InferenceWorker(GeneratorWorker):
 
         # print(volume.shape)
         # print(volume.dtype)
-        if self.config.sliding_window_config.window_size is not None:
+        if self.config.sliding_window_config.is_enabled():
             load_transforms = Compose(
                 [
                     ToTensor(),
@@ -1351,7 +1351,8 @@ class TrainingWorker(GeneratorWorker):
                             torch.save(
                                 model.state_dict(),
                                 os.path.join(
-                                    self.config.results_path_folder, weights_filename
+                                    self.config.results_path_folder,
+                                    weights_filename,
                                 ),
                             )
                             self.log("Saving complete")
