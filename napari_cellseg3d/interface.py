@@ -728,7 +728,7 @@ class GroupedWidget(QGroupBox):
 
 
 class ContainerWidget(QWidget):
-    def __init__(self, l=0, t=0, r=1, b=11, vertical=True, parent=None):
+    def __init__(self, l=0, t=0, r=1, b=11, vertical=True, parent=None, fixed=True):
 
         super().__init__(parent)
         self.layout = None
@@ -739,7 +739,8 @@ class ContainerWidget(QWidget):
             self.layout = QHBoxLayout(self)
 
         self.layout.setContentsMargins(l, t, r, b)
-        self.layout.setSizeConstraint(QLayout.SetFixedSize)
+        if fixed:
+            self.layout.setSizeConstraint(QLayout.SetFixedSize)
 
 
 def add_widgets(layout, widgets, alignment=LEFT_AL):
