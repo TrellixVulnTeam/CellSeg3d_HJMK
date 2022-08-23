@@ -728,7 +728,9 @@ class GroupedWidget(QGroupBox):
 
 
 class ContainerWidget(QWidget):
-    def __init__(self, l=0, t=0, r=1, b=11, vertical=True, parent=None, fixed=True):
+    def __init__(
+        self, l=0, t=0, r=1, b=11, vertical=True, parent=None, fixed=True
+    ):
 
         super().__init__(parent)
         self.layout = None
